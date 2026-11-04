@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="rock" viewBox="0 0 64 64">
+    <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 49 13 38V25a5 5 0 0 1 10 0v8-15a5 5 0 0 1 10 0v14-17a5 5 0 0 1 10 0v17-12a5 5 0 0 1 10 0v21l-8 13H23Z"/>
+      <path d="M13 34h17a6 6 0 0 1 0 12h-7m0-13v5m10-6v6m10-6v6M23 54v4h22v-5"/>
+    </g>
+  </symbol>
+  <symbol id="paper" viewBox="0 0 64 64">
+    <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 51 9 35a4 4 0 0 1 6-5l7 7V14a4 4 0 0 1 8 0v17V9a4 4 0 0 1 8 0v22V13a4 4 0 0 1 8 0v20-12a4 4 0 0 1 8 0v22l-9 12H26Z"/>
+      <path d="M27 55v4h18v-4M30 40c5-3 10-3 14 0"/>
+    </g>
+  </symbol>
+  <symbol id="scissors" viewBox="0 0 64 64">
+    <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m24 33-5-21a4 4 0 0 1 8-2l7 20 7-20a4 4 0 0 1 8 3l-6 22h5a5 5 0 0 1 5 5v6l-9 10H26L16 43v-7a5 5 0 0 1 8-3Z"/>
+      <path d="m24 33 9 7a5 5 0 0 1-6 8l-6-4m12-5 8 1m-5-10 7 5M27 56v4h17v-4"/>
+    </g>
+  </symbol>
+</svg>

@@ -6,8 +6,8 @@
 
 - Choose rock, paper, or scissors. The computer chooses one move for that round.
 - Display both choices and the result: **You win!**, **Computer wins**, or **It’s a tie**.
-- Choosing again starts an independent round. No score or saved history.
-- Keep the supplied interface and server. Name/color changes can wait until the rules work.
+- Each choice plays a round. The agreed modes below add match scoring without saved history.
+- Extend the supplied interface and server with mode selection and score display.
 
 ### Expected results
 
@@ -27,9 +27,21 @@ Results are from the **player’s perspective**. `determine_winner(player, compu
 
 ### Agreed plan
 
-Before implementation, predict one matchup and explain it with your local coding agent. Discuss a short plan and checks. Once it makes sense, ask the agent to replace this paragraph with the agreed plan, preserving the expected results above. Continue in the same chat.
+Implement ties and the three winning pairs in `game.py`, returning results from the player's perspective. The learner predicted that Rock loses to Paper because paper covers rock. Check all nine literal matchups, real HTTP results, rejected missing/unsupported moves, and a real browser round with replay. Extend the supplied interface and server with the modes agreed below.
+
+### Agreed extension: game modes
+
+- Before playing, choose Free mode (unlimited rounds), Best of 3 (first to 2 wins), or Best of 5 (first to 3 wins).
+- Show both scores. A round win adds one point to its winner; ties add no points.
+- When a match finishes, keep the result visible and prevent further rounds/scoring.
+- New match restarts the same mode with zero scores and no previous result. Change mode returns to selection.
+- Reloading the page returns to mode selection and discards the match, as requested by the learner.
+- Use the existing Flask app and styling, with a small JavaScript controller. Keep per-browser match state in a signed session cookie; no accounts or database.
+- Check both match lengths, both winners, ties, unlimited free play, invalid mode/move input, post-match rejection, restart, reload, and browser mode selection/match completion.
 
 ### Checks
+
+Visual update requested after the modes: replace the pale appearance with a colorful arcade style. Use a dark grid background, lime/pink/blue accents, SVG move icons, raised buttons, and clear score panels. Keep the agreed modes and rules. Stack mode cards on narrow screens, preserve keyboard focus indicators, and respect reduced-motion preferences.
 
 Before coding, agree this small test plan with AI:
 
@@ -44,7 +56,9 @@ Use `unit`, `integration`, and `e2e` pytest markers. Run `.venv/bin/python check
 
 ### Work record
 
-- Issue: add your own issue URL.
+- Issue: [RPS-001: Playable RPS game with game modes #1](https://github.com/LucasBurgo/my-rps/issues/1).
 - Pull request / CI: add actual URLs when they exist.
-- Implementation: **Not implemented.** The shell is supplied; `game.py` is unfinished.
-- Checks: **Rules not verified.** Supplied request/browser tests cover the shell only. After implementation, record actual full-check results and your browser observations here; put detailed results in the PR. Passing formatting and analysis alone is not evidence of correct rules.
+- Implementation: [winner rules](game.py), [match API](app.py), [mode menu](templates/index.html), and [browser controller](static/game.js). Implemented Free mode, Best of 3, Best of 5, score display, match completion, restart, and reload to selection.
+- Checks: Full `.venv/bin/python check.py` passed: Black, Pylint, 29 non-browser tests, and 8 Chromium tests. [Rules and predicted loss](tests/test_game.py), [match scoring and validation](tests/test_modes.py), [browser round/replay and matches](tests/e2e/test_round.py). Existing input checks now exercise `/round`; development reload checks start from the new menu. Removed unfinished-rule checks because the rules are implemented; replaced them with completed-game/menu checks.
+- Review: Compared implementation and tests with the nine expected results and agreed modes. The learner reported playing Paper against the computer's Rock and seeing a player win, consistent with paper covering rock. When the learner saw no mistake in the test example, explained that the passing assertion would catch a future rule bug returning `lose` or `tie` for Paper against Rock. Issue #1 is linked above; PR and CI links will be recorded when available.
+- Visual review: Inspected desktop menu and mobile gameplay screenshots. Browser previews at 1365px, 390px, and 320px had no horizontal overflow or JavaScript errors. Reduced-motion styling was verified. Replaced missing Ubuntu emoji glyphs with local [SVG icons](static/moves.svg); the Python-save browser check now verifies that changing available moves updates the rendered buttons.
