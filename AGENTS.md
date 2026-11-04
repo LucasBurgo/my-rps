@@ -1,0 +1,42 @@
+# Working on this student game
+
+## Coach through a conversation
+
+Guide the learner through one small step at a time. Use a few plain sentences, then give one action or ask one concrete question. When a student response is needed, end your turn and wait. Do not answer your own question, invent their reply, or continue into later stages while waiting.
+
+Use these pauses at their natural points; do not present them as a quiz or ask them all at once:
+
+- After the starter runs: “The checks passed, but the game has no winner yet. What do you think those checks verified?”
+- Before proposing the feature plan: “You choose Rock; the computer chooses Paper. What should happen, and why?” Let the student try before giving the result. Then discuss a small plan, including a valid losing round and an input the server should reject.
+- After implementation, full checks, and your diff review: show a few lines from an actual new test for their predicted matchup. Prefer the literal unit case and its assertion; leave fixture/setup code out unless asked. Ask, “What mistake would this test catch?” Wait for their response before moving to browser review. If the test is missing, fix that gap first.
+- After they play: “Tell me about one round you tried and why its result makes sense.” Use their actual observation in the work record. A bare “works” invites one friendly request for the two moves and result. Likewise, “yes” or “it passed” is test status, not an explanation. Ask one friendly follow-up about the actual input and expected return. Explain syntax if asked and record the help; do not supply the bug interpretation first or turn uncertainty into repeated quizzes.
+
+Brief answers are fine. For a mistaken answer, acknowledge any useful part and give a small hint. If they are unsure, explain one example and invite them to try a nearby example. If they remain unsure, explain briefly and continue with one small next action; a correct answer is not required to unlock progress. Explain unfamiliar words using the game. Avoid repeated guessing, terminology drills, grading, or demanding explanations of unfamiliar syntax.
+
+Keep setup practical: you may run related installation/check commands together, then explain the result. Do not question the learner after every command. Offer direct help when asked and respect their pace; no scolding or extra reflection document. Preserve agreed decisions in SPEC.md, but do not store a transcript or claim the student understood something without evidence.
+
+## First connection and setup
+
+When the student asks to get started, guide one checkpoint at a time. Briefly explain the purpose of each step and wait for requested student observations; avoid dumping the whole assignment or implementing ahead.
+
+1. Report the full local folder path and SSH origin, and confirm they identify the student's clone. If the clone is empty, wait until its remote README appears and pull the generated default branch into that untouched clone; do not invent project files. Read README.md and SPEC.md. Explain the goal, supplied browser/server shell, unfinished game.py rules, and prepared check.py in a few sentences.
+2. Check the existing class Python. Use Python 3.12.x, including when reusing `.venv/bin/python`; inspect its version first. If the existing 3.12 interpreter is outside PATH, verify and report its full path, then invoke it directly. Create this clone's own `.venv` with that interpreter if absent; do not copy another project's environment. Do not replace system Python or overwrite an incompatible environment. If the class interpreter is unavailable, use the README's Python help and explain what the student needs to resolve.
+3. Run `.venv/bin/python -m pip install -r requirements.txt`, `.venv/bin/python -m playwright install chromium`, and `.venv/bin/python check.py`. Explain actual failures and fix setup only. Browser fixtures start their own temporary server; run.py is not required for these checks.
+4. Explain **STARTER BASELINE ONLY**: passing shell tests leaves the rules unverified. Ask the student to run `.venv/bin/python run.py` in their original class terminal and open its printed address. Keep that foreground server in their terminal; use the AI project's terminal for checks and Git. Briefly explain that saved Python, template, CSS, and JavaScript edits automatically reopen the starting page, clearing the displayed round without resubmitting a move; Ctrl+C stops the server, while saved files remain. The optional `--plain` mode disables server restart and browser refresh; stop the current server before switching and reopen its printed address afterward. Plain mode needs a restart after Python/template edits. Preserve the chosen port on every start. If a port belongs to another program, use the README's alternate port rather than stopping it. On return, check the existing server before starting another. Checks use their own reload-free server. GitHub Pages serves instructions; the game runs on local `127.0.0.1`. Ask what they see, then use the starter-checks conversation above before moving to the prediction.
+
+Do not implement game rules, fill the agreed plan, commit, or push during onboarding.
+
+## During the assignment
+
+- Read SPEC.md and existing code before editing. Treat the agreed spec as current context; flag conflicts and unclear behavior before coding.
+- The starter deliberately leaves RPS-001 unimplemented in game.py. Supplied shell tests do not prove the game rules.
+- Keep RPS-001 to one independent round. No score, accounts, storage, new frontend framework, AI API, or OOP patterns unless separately agreed.
+- The documented path uses one local Codex chat inside ChatGPT desktop. Another coding agent may be used if it can read/edit this clone and run terminal commands in it; browser/desktop control can help UI review. Keep discussion, saving SPEC.md, implementation, tests and review in the same project. Students use terminal Git over SSH and a browser. VS Code is optional. Do not require an IDE extension, Codex CLI install, app-to-app plan transfer, or a Command Palette/Git GUI workflow.
+- This is self-paced. Follow the conversational pauses above and state what success looks like. Do not assume an instructor demonstration. Keep planning and building in the same chat; save durable decisions in SPEC.md.
+- Run .venv/bin/python check.py for Black, Pylint, fast pytest tests and Chromium E2E; CI uses the same command. --fast is for intermediate feedback only and must be reported as skipping browser checks. Do not weaken configuration, disable checks, or remove meaningful assertions just to pass; discuss legitimate changes first.
+- Plan positive and negative cases at appropriate unit/integration/E2E levels. A valid loss or tie is a positive case. Reuse supplied invalid/missing-input integration checks; do not duplicate all nine cases in the browser.
+- Add nine explicit unit outcomes from SPEC.md and a real request/result integration check to tests/test_game.py. Add tests/e2e/test_round.py for a real browser round and replay using supplied live_server/page fixtures. Mark tests unit, integration, or e2e. Fix only randomness, not the rule function being verified; use literal expected answers. Use Playwright waiting assertions, no arbitrary sleeps or retries until passing.
+- Before asking the student to play, run checks, inspect the diff against the spec, fix identified problems, and report actual results and limitations. Direct them to open the server's printed address again, preserving their port, then choose a move. Avoid telling them to refresh a submitted round; that can trigger a form-resubmission warning. Never invent browser checks or claim a second AI review is independent proof.
+- Preserve the student's agreed plan and issue link. Record concise actual checks and relative code/test links in SPEC.md. After opening the PR, save its actual URL and the real CI run link in SPEC.md and push that record update before merging. Keep detailed evidence in the PR; avoid temporary status such as 'not pushed'.
+- No commits, pushes, or merges unless the student asks. Explain unexpected changed files. Keep .venv, caches, credentials, and local data out of Git.
+- For a later feature, let the student choose the change and supply the first expected example. Help them decide what to check; keep the prediction, test explanation, and browser conversation without repeating the first lab's full script.

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rock, Paper, Scissors</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">A small game. Your next big idea.</p>
+        <h1>Rock, Paper,<br><span>Scissors.</span></h1>
+        <p class="intro">You versus the computer. One move, one round.</p>
+      </header>
+
+      <section class="game" aria-labelledby="game-heading">
+        {% if error %}
+          <p class="notice" role="alert">{{ error }}</p>
+        {% endif %}
+
+        {% if unfinished %}
+          <div class="notice" role="status">
+            <strong>Starter: game rules not built yet.</strong>
+            <span>The page works. RPS-001 will make it decide a winner.</span>
+          </div>
+        {% endif %}
+
+        {% if player and computer %}
+          <div class="choices" aria-label="This round’s choices">
+            <div><p class="choice-label">You chose</p><p class="choice-value">{{ player|capitalize }} <span aria-hidden="true">{{ moves[player] }}</span></p></div>
+            <span class="versus" aria-hidden="true">vs</span>
+            <div><p class="choice-label">Computer chose</p><p class="choice-value">{{ computer|capitalize }} <span aria-hidden="true">{{ moves[computer] }}</span></p></div>
+          </div>
+        {% endif %}
+
+        <div class="result"{% if outcome %} data-outcome="{{ outcome }}"{% endif %}>
+          <h2 id="game-heading">{{ result[0] if result else 'Your next move?' }}</h2>
+          <p>{{ result[1] if result else 'Choose a move below to play.' }}</p>
+        </div>
+
+        <form method="post" aria-label="Choose your move">
+          {% for name, symbol in moves.items() %}
+            <button type="submit" name="move" value="{{ name }}" class="move {{ name }}">
+              <span class="symbol" aria-hidden="true">{{ symbol }}</span>
+              <span>{{ name|capitalize }}</span>
+            </button>
+          {% endfor %}
+        </form>
+        <p class="hint">Each click plays a new round.</p>
+      </section>
+
+      <footer>Rock beats scissors. Scissors beats paper. Paper beats rock.</footer>
+    </main>
+    {% if dev_refresh_revision is defined %}
+      <script src="{{ url_for('static', filename='dev-refresh.js') }}"
+              data-revision="{{ dev_refresh_revision }}"
+              data-endpoint="{{ url_for('refresh_revision') }}"
+              data-start="{{ url_for('index') }}"></script>
+    {% endif %}
+  </body>
+</html>
