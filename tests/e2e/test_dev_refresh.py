@@ -64,16 +64,17 @@ def test_saved_python_template_css_and_js_refresh_browser(page: Page, launch_gam
     """Each save updates a real open page, with no manual refresh/navigation."""
     project, address, _ = launch_game
     page.goto(address)
+    page.get_by_role("button", name="Free mode").click()
     page.get_by_role("button", name="Rock", exact=True).click()
     expect(page.get_by_label("This round’s choices")).to_be_visible()
 
     template = project / "templates" / "index.html"
     template.write_text(
-        template.read_text().replace("Your next move?", "Saved template arrived"),
+        template.read_text().replace("Choose your mode", "Saved template arrived"),
         encoding="utf-8",
     )
     expect(page.get_by_role("heading", name="Saved template arrived")).to_be_visible()
-    expect(page.get_by_label("This round’s choices")).to_have_count(0)
+    expect(page.get_by_label("This round’s choices")).to_be_hidden()
 
     stylesheet = project / "static" / "style.css"
     with stylesheet.open("a", encoding="utf-8") as saved:
@@ -98,17 +99,15 @@ def test_saved_python_template_css_and_js_refresh_browser(page: Page, launch_gam
 
     python = project / "app.py"
     python.write_text(
-        python.read_text().replace(
-            "moves=MOVES,", 'moves={"rock": "PYTHON SAVE ARRIVED"},'
-        ),
+        python.read_text().replace("moves=MOVES", 'moves={"rock": "rock"}'),
         encoding="utf-8",
     )
-    expect(page.get_by_role("button", name="Rock", exact=True)).to_contain_text(
-        "PYTHON SAVE ARRIVED", timeout=15000
-    )
+    expect(page.locator('button[value="paper"]')).to_have_count(0, timeout=15000)
+    expect(page.locator('button[value="scissors"]')).to_have_count(0)
+    expect(page.locator('button[value="rock"]')).to_have_count(1)
     # Refresh returns to a new round, with or without completed game rules.
     expect(page.get_by_role("heading", name="Saved template arrived")).to_be_visible()
-    expect(page.get_by_label("This round’s choices")).to_have_count(0)
+    expect(page.get_by_label("This round’s choices")).to_be_hidden()
     expect(page.locator("[data-outcome]")).to_have_count(0)
 
 
@@ -119,6 +118,7 @@ def test_plain_mode_omits_browser_refresh(page: Page, launch_game):
     page.goto(address)
     expect(page.locator('script[src*="dev-refresh"]')).to_have_count(0)
     assert page.request.get(address + "/__dev__/revision").status == 404
+    page.get_by_role("button", name="Free mode").click()
     page.get_by_role("button", name="Paper", exact=True).click()
     expect(page.get_by_label("This round’s choices")).to_be_visible()
 
@@ -151,7 +151,7 @@ def test_development_logs_keep_requests_and_errors_without_poll_noise(
     page.goto(address)
     assert page.request.get(address + "/__dev__/revision").status == 200
     assert page.request.post(address + "/__dev__/revision").status == 405
-    assert page.request.post(address, form={"move": "lizard"}).status == 400
+    assert page.request.post(address + "/round", form={"move": "lizard"}).status == 400
     assert page.request.get(address + "/log-check-missing").status == 404
     logs = []
     while True:
@@ -166,4 +166,4 @@ def test_development_logs_keep_requests_and_errors_without_poll_noise(
     assert 'GET /__dev__/revision HTTP/1.1" 200' not in actual
     assert 'POST /__dev__/revision HTTP/1.1" 405' in actual
     assert 'GET / HTTP/1.1" 200' in actual
-    assert 'POST / HTTP/1.1" 400' in actual
+    assert 'POST /round HTTP/1.1" 400' in actual

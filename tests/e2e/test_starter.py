@@ -1,38 +1,17 @@
-"""Real-browser check of the supplied unfinished shell, not completed rules.
-
-Students add test_round.py using the real determine_winner function. This test
-keeps the unfinished-path check useful after students implement their rules.
-"""
+"""Real-browser checks for the mode menu and invalid-round feedback."""
 
 import pytest
 from playwright.sync_api import Page, expect
 
-import app as web
-
 pytestmark = pytest.mark.e2e
 
 
-def test_unfinished_game_in_real_browser(page: Page, live_server, monkeypatch):
-    """A Chromium click reaches the real server and shows the honest notice."""
-
-    def unfinished(_player, _computer):
-        raise NotImplementedError
-
-    monkeypatch.setattr(web.game, "determine_winner", unfinished)
-    monkeypatch.setattr(web.random, "choice", lambda _moves: "scissors")
+def test_mode_menu_and_invalid_round(page: Page, live_server):
+    """Mode selection precedes play; the API retains useful validation."""
     page.goto(live_server)
-    for move in ("Rock", "Paper", "Scissors"):
-        expect(page.get_by_role("button", name=move, exact=True)).to_be_visible()
-    expect(page.get_by_role("status")).to_contain_text(
-        "Starter: game rules not built yet."
-    )
-
-    page.get_by_role("button", name="Rock", exact=True).click()
-
-    expect(page.get_by_label("This round’s choices")).to_be_visible()
-    expect(page.get_by_text("You chose", exact=True)).to_be_visible()
-    expect(page.get_by_text("Computer chose", exact=True)).to_be_visible()
-    expect(page.get_by_role("status")).to_contain_text(
-        "Starter: game rules not built yet."
-    )
-    expect(page.locator("[data-outcome]")).to_have_count(0)
+    for name in ("Free mode", "Best of 3", "Best of 5"):
+        expect(page.get_by_role("button", name=name)).to_be_visible()
+    expect(page.get_by_role("button", name="Rock", exact=True)).to_be_hidden()
+    response = page.request.post(live_server + "/round", form={"move": "lizard"})
+    assert response.status == 400
+    assert response.json()["error"] == "Choose Rock, Paper, or Scissors to play."

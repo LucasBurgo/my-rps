@@ -5,52 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Rock, Paper, Scissors</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script defer src="{{ url_for('static', filename='game.js') }}"></script>
   </head>
   <body>
     <main>
+      <div class="topline"><span class="brand"><span class="brand-mark" aria-hidden="true">✦</span> THE RPS ARCADE</span><span class="live-badge">YOU VS COMPUTER</span></div>
       <header>
-        <p class="eyebrow">A small game. Your next big idea.</p>
+        <span class="hero-hand hand-left" aria-hidden="true"><svg><use href="{{ url_for('static', filename='moves.svg') }}#rock"/></svg></span>
+        <span class="hero-hand hand-right" aria-hidden="true"><svg><use href="{{ url_for('static', filename='moves.svg') }}#scissors"/></svg></span>
+        <p class="eyebrow">Three moves. Endless rematches.</p>
         <h1>Rock, Paper,<br><span>Scissors.</span></h1>
-        <p class="intro">You versus the computer. One move, one round.</p>
+        <p class="intro">You versus the computer. Choose your challenge.</p>
       </header>
-
-      <section class="game" aria-labelledby="game-heading">
-        {% if error %}
-          <p class="notice" role="alert">{{ error }}</p>
-        {% endif %}
-
-        {% if unfinished %}
-          <div class="notice" role="status">
-            <strong>Starter: game rules not built yet.</strong>
-            <span>The page works. RPS-001 will make it decide a winner.</span>
-          </div>
-        {% endif %}
-
-        {% if player and computer %}
-          <div class="choices" aria-label="This round’s choices">
-            <div><p class="choice-label">You chose</p><p class="choice-value">{{ player|capitalize }} <span aria-hidden="true">{{ moves[player] }}</span></p></div>
-            <span class="versus" aria-hidden="true">vs</span>
-            <div><p class="choice-label">Computer chose</p><p class="choice-value">{{ computer|capitalize }} <span aria-hidden="true">{{ moves[computer] }}</span></p></div>
-          </div>
-        {% endif %}
-
-        <div class="result"{% if outcome %} data-outcome="{{ outcome }}"{% endif %}>
-          <h2 id="game-heading">{{ result[0] if result else 'Your next move?' }}</h2>
-          <p>{{ result[1] if result else 'Choose a move below to play.' }}</p>
+      <p id="error" class="notice" role="alert" hidden></p>
+      <section id="menu" class="game" aria-labelledby="menu-heading">
+        <h2 id="menu-heading">Choose your mode</h2>
+        <p class="menu-intro">A quick match or just one more round?</p>
+        <form id="mode-form" aria-label="Choose your mode">
+          <button class="move rock" name="mode" value="free"><span class="mode-icon" aria-hidden="true">∞</span><span>Free mode</span><small>Unlimited rounds</small></button>
+          <button class="move paper" name="mode" value="best3"><span class="mode-icon" aria-hidden="true">03</span><span>Best of 3</span><small>First to 2 wins</small></button>
+          <button class="move scissors" name="mode" value="best5"><span class="mode-icon" aria-hidden="true">05</span><span>Best of 5</span><small>First to 3 wins</small></button>
+        </form>
+        <p class="hint">Ties award no points. Reloading returns here.</p>
+      </section>
+      <section id="board" class="game" aria-labelledby="game-heading" hidden>
+        <p id="mode-label" class="eyebrow"></p>
+        <div class="scoreboard" aria-label="Match score"><span>You <strong id="player-score">0</strong></span><span>Computer <strong id="computer-score">0</strong></span></div>
+        <div id="choices" class="choices" aria-label="This round’s choices" hidden>
+          <div><p class="choice-label">You chose</p><p id="player-choice" class="choice-value"></p></div>
+          <span class="versus" aria-hidden="true">vs</span>
+          <div><p class="choice-label">Computer chose</p><p id="computer-choice" class="choice-value"></p></div>
         </div>
-
-        <form method="post" aria-label="Choose your move">
-          {% for name, symbol in moves.items() %}
+        <div class="result" aria-live="polite" aria-atomic="true">
+          <h2 id="game-heading">Your next move?</h2>
+          <p id="result-detail">Choose a move below to play.</p>
+        </div>
+        <form id="move-form" aria-label="Choose your move">
+          {% for name in moves %}
             <button type="submit" name="move" value="{{ name }}" class="move {{ name }}">
-              <span class="symbol" aria-hidden="true">{{ symbol }}</span>
-              <span>{{ name|capitalize }}</span>
+              <svg class="symbol" aria-hidden="true"><use href="{{ url_for('static', filename='moves.svg') }}#{{ name }}"/></svg><span>{{ name|capitalize }}</span>
             </button>
           {% endfor %}
         </form>
-        <p class="hint">Each click plays a new round.</p>
+        <div class="actions"><button id="restart" class="secondary" type="button">New match</button><button id="change-mode" class="secondary" type="button">Change mode</button></div>
       </section>
-
-      <footer>Rock beats scissors. Scissors beats paper. Paper beats rock.</footer>
+      <noscript><p class="notice">Enable JavaScript to select a mode and play.</p></noscript>
+      <footer><span>Rock <b>beats</b> scissors</span><span>Scissors <b>beats</b> paper</span><span>Paper <b>beats</b> rock</span></footer>
     </main>
     {% if dev_refresh_revision is defined %}
       <script src="{{ url_for('static', filename='dev-refresh.js') }}"
